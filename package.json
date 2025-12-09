@@ -36,12 +36,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/preset-validation.git"
+    "url": "https://github.com/anytax/preset-validation.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/preset-validation/issues"
+    "url": "https://github.com/anytax/preset-validation/issues"
   },
-  "homepage": "https://github.com/your-org/preset-validation#readme",
+  "homepage": "https://github.com/anytax/preset-validation#readme",
   "files": [
     "dist",
     "README.md",
