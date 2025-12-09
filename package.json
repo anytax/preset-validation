@@ -1,0 +1,64 @@
+{
+  "name": "@anytax/preset-validation",
+  "version": "1.0.0",
+  "description": "A comprehensive validation library for German tax identifiers and international banking codes",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "cp src/country-codes.json dist/country-codes.json",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "validation",
+    "tax",
+    "iban",
+    "bic",
+    "swift",
+    "german",
+    "steueridentifikationsnummer",
+    "steuernummer",
+    "banking",
+    "finance",
+    "iso13616",
+    "iso9362",
+    "mod97",
+    "modulo11",
+    "typescript",
+    "browser",
+    "node"
+  ],
+  "author": "AnyTax",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/preset-validation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-org/preset-validation/issues"
+  },
+  "homepage": "https://github.com/your-org/preset-validation#readme",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
+

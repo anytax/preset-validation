@@ -1,0 +1,46 @@
+# Source files (only dist is published)
+src/
+*.ts
+!*.d.ts
+
+# Test files
+test/
+*.spec.ts
+*.test.ts
+*-test.ts
+__tests__/
+coverage/
+
+# Development files
+.vscode/
+.idea/
+*.log
+.DS_Store
+.env
+.env.local
+
+# Configuration files
+tsconfig.json
+.eslintrc*
+.prettierrc*
+jest.config.*
+
+# Git
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.travis.yml
+.gitlab-ci.yml
+
+# Package management
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Templates
+*.template
+
