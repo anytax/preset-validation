@@ -2,7 +2,7 @@
  * Unit tests for validateSteuernummer function
  * Tests German tax number validation with BUFA codes and Prüfziffer verification
  */
-import { validateSteuernummer } from './validation-tax-number';
+import { validateSteuernummer } from '../src/tax-number/validation-tax-number';
 
 describe('validateSteuernummer', () => {
   describe('valid tax numbers', () => {

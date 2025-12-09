@@ -18,29 +18,24 @@ A comprehensive, framework-agnostic validation library for German tax identifier
 ## Installation
 
 ```bash
-# Copy the preset-validation folder to your project
-cp -r preset-validation /path/to/your/project/src/utils/
-```
+# Install via npm
+npm install @anytax/preset-validation
 
-### TypeScript Configuration
+# Or using yarn
+yarn add @anytax/preset-validation
 
-Ensure your `tsconfig.json` includes:
-
-```json
-{
-  "compilerOptions": {
-    "resolveJsonModule": true,
-    "esModuleInterop": true
-  }
-}
+# Or using pnpm
+pnpm add @anytax/preset-validation
 ```
 
 ---
 
 ## Quick Start
 
+### Backend (Node.js / Express / NestJS / etc.)
+
 ```typescript
-import { runValidationPreset, ValidationPreset } from './preset-validation';
+import { runValidationPreset, ValidationPreset } from '@anytax/preset-validation';
 
 // Validate German Tax ID
 const isValid = runValidationPreset(ValidationPreset.TAX_ID, '12345678903');
@@ -53,6 +48,118 @@ console.log(ibanValid); // true
 // Validate BIC
 const bicValid = runValidationPreset(ValidationPreset.BIC, 'DEUTDEFF500');
 console.log(bicValid); // true
+```
+
+### Frontend (React / Vue / Angular / etc.)
+
+#### React Example
+
+```tsx
+import { useState } from 'react';
+import { validateIBAN, validateGermanTaxId } from '@anytax/preset-validation';
+
+function TaxValidationForm() {
+  const [taxId, setTaxId] = useState('');
+  const [iban, setIban] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const isTaxIdValid = validateGermanTaxId(taxId);
+    const isIbanValid = validateIBAN(iban);
+
+    if (isTaxIdValid && isIbanValid) {
+      console.log('All validations passed!');
+      // Process form...
+    } else {
+      console.log('Validation failed');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={taxId}
+        onChange={(e) => setTaxId(e.target.value)}
+        placeholder="Tax ID"
+      />
+      <input
+        type="text"
+        value={iban}
+        onChange={(e) => setIban(e.target.value)}
+        placeholder="IBAN"
+      />
+      <button type="submit">Validate</button>
+    </form>
+  );
+}
+```
+
+#### Vue Example
+
+```vue
+<template>
+  <form @submit.prevent="handleSubmit">
+    <input v-model="taxId" placeholder="Tax ID" />
+    <input v-model="iban" placeholder="IBAN" />
+    <button type="submit">Validate</button>
+  </form>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { validateGermanTaxId, validateIBAN } from '@anytax/preset-validation';
+
+const taxId = ref('');
+const iban = ref('');
+
+const handleSubmit = () => {
+  const isTaxIdValid = validateGermanTaxId(taxId.value);
+  const isIbanValid = validateIBAN(iban.value);
+
+  if (isTaxIdValid && isIbanValid) {
+    console.log('All validations passed!');
+    // Process form...
+  } else {
+    console.log('Validation failed');
+  }
+};
+</script>
+```
+
+#### Angular Example
+
+```typescript
+import { Component } from '@angular/core';
+import { validateGermanTaxId, validateIBAN } from '@anytax/preset-validation';
+
+@Component({
+  selector: 'app-tax-validation',
+  template: `
+    <form (ngSubmit)="handleSubmit()">
+      <input [(ngModel)]="taxId" name="taxId" placeholder="Tax ID" />
+      <input [(ngModel)]="iban" name="iban" placeholder="IBAN" />
+      <button type="submit">Validate</button>
+    </form>
+  `
+})
+export class TaxValidationComponent {
+  taxId = '';
+  iban = '';
+
+  handleSubmit() {
+    const isTaxIdValid = validateGermanTaxId(this.taxId);
+    const isIbanValid = validateIBAN(this.iban);
+
+    if (isTaxIdValid && isIbanValid) {
+      console.log('All validations passed!');
+      // Process form...
+    } else {
+      console.log('Validation failed');
+    }
+  }
+}
 ```
 
 ---
@@ -123,7 +230,7 @@ import {
   validateBIC,
   ValidationPreset,
   type ValidationPresetType,
-} from './preset-validation';
+} from '@anytax/preset-validation';
 ```
 
 ---

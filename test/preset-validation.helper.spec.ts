@@ -7,7 +7,7 @@ import {
   validateGermanTaxId,
   validateGermanTaxNumber,
   validateIBAN,
-} from './index';
+} from '../src/index';
 
 describe('Preset Validation Functions', () => {
   describe('validateGermanTaxId', () => {

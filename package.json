@@ -2,13 +2,16 @@
   "name": "@anytax/preset-validation",
   "version": "1.0.0",
   "description": "A comprehensive validation library for German tax identifiers and international banking codes",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc",
+    "build": "tsc && npm run copy-assets",
+    "copy-assets": "cp src/country-codes.json dist/country-codes.json",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
     "lint": "eslint .",
-    "prepublishOnly": "npm test && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "validation",
@@ -24,7 +27,10 @@
     "iso13616",
     "iso9362",
     "mod97",
-    "modulo11"
+    "modulo11",
+    "typescript",
+    "browser",
+    "node"
   ],
   "author": "AnyTax",
   "license": "MIT",
@@ -37,12 +43,9 @@
   },
   "homepage": "https://github.com/your-org/preset-validation#readme",
   "files": [
-    "index.js",
-    "index.d.ts",
-    "preset-validation.helper.js",
-    "preset-validation.helper.d.ts",
-    "country-codes.json",
-    "README.md"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "devDependencies": {
     "@types/jest": "^29.0.0",
