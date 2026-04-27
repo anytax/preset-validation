@@ -189,9 +189,9 @@ describe('validateSteuernummer', () => {
     });
 
     it('should reject 11-digit format with invalid check digit', () => {
-      const result = validateSteuernummer('11/160/874123');
+      // Base: valid Berlin 11-digit '16012345677' (P=7), wrong P=8
+      const result = validateSteuernummer('16/012/345678');
 
-      // Strict validation: rejected due to invalid check digit
       expect(result.valid).toBe(false);
       expect(result.reason).toBeDefined();
     });
@@ -341,5 +341,90 @@ describe('validateSteuernummer', () => {
         expect(result).toHaveProperty('reason');
       }
     });
+  });
+
+  it('check valid tax numbers', () => {
+    const validTaxNumbers = [
+      // 13-digit ELSTER format with correct Prüfziffer
+      // Berlin - BUFA 1116 (Neukölln)
+      "1116012345677",
+
+      // Brandenburg - BUFA 3046 (Potsdam)
+      "3046012345674",
+
+      // Bavaria - BUFA 9101 (Augsburg-Stadt)
+      "9101012345671",
+
+      // North Rhine-Westphalia - BUFA 5101 (Dinslaken)
+      "5101012345675",
+
+      // Baden-Württemberg - BUFA 2801 (Offenburg)
+      "2801012345673",
+
+      // Hamburg - BUFA 2210
+      "2210012345677",
+
+      // 10-digit local format with slashes (exercises normalization + multi-BUFA search)
+      // Berlin local: FF=16, BBB=123, UUUU=4567, P=7
+      "16/123/45677",
+
+      // Hamburg local: FF=10, BBB=123, UUUU=4567, P=7
+      "10/123/45677",
+
+      // 11-digit local format FF0BBBUUUUP (ELSTER 13-digit without Landesnummer prefix)
+      // Berlin: FF=16, 0, BBB=123, UUUU=4567, P=7
+      "16012345677",
+      "16/0/123/45677",
+
+      // Hamburg: FF=10, 0, BBB=123, UUUU=4567, P=7
+      "10012345677",
+    ];
+
+    for (const taxNumber of validTaxNumbers) {
+      const result = validateSteuernummer(taxNumber);
+      expect(result.valid).toBe(true);
+    }
+  });
+
+  it('check invalid tax numbers', () => {
+    const invalidTaxNumbers = [
+      // Wrong length (ELSTER must be 13 digits)
+      "123456789012",      // 12 digits
+      "12345678901234",    // 14 digits
+
+      // Contains letters (not allowed)
+      "12340A1234567",
+
+      // Violates ELSTER structure (5th digit must be 0)
+      "1234512345678",
+
+      // Starts with invalid pattern (e.g. leading zero issues depending on rules)
+      "0000001234567",
+
+      // Only separators, no valid structure
+      "12/34/56",
+
+      // Too short Bundesland format
+      "12/345/678",
+
+      // Too long local format
+      "123/456/7890123",
+
+      // Invalid characters
+      "12-345-67890",
+      "12/345/6789A",
+
+      // Empty / malformed
+      "",
+      "///////////",
+
+      // Spaces inside digits (invalid for ELSTER)
+      "12340 01234567"
+    ];
+
+    for (const taxNumber of invalidTaxNumbers) {
+      const result = validateSteuernummer(taxNumber);
+      expect(result.valid).toBe(false);
+    }
   });
 });
