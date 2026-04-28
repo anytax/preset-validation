@@ -158,7 +158,7 @@ describe('validateSteuernummer', () => {
 
   describe('10-digit, 11-digit, and 12-digit formats', () => {
     it('should reject 10-digit with invalid check digit', () => {
-      const result = validateSteuernummer('1234567890');
+      const result = validateSteuernummer('1612345670');
 
       // Strict validation: rejected due to invalid check digit
       expect(result.valid).toBe(false);
@@ -166,7 +166,7 @@ describe('validateSteuernummer', () => {
     });
 
     it('should reject 10-digit format with formatting and invalid check digit', () => {
-      const result = validateSteuernummer('12/345/67890');
+      const result = validateSteuernummer('16/123/45670');
 
       // Strict validation: rejected due to invalid check digit
       expect(result.valid).toBe(false);
@@ -181,7 +181,7 @@ describe('validateSteuernummer', () => {
     });
 
     it('should reject 11-digit with invalid check digit', () => {
-      const result = validateSteuernummer('12345678901');
+      const result = validateSteuernummer('16012345670');
 
       // Strict validation: rejected due to invalid check digit
       expect(result.valid).toBe(false);
@@ -189,8 +189,8 @@ describe('validateSteuernummer', () => {
     });
 
     it('should reject 11-digit format with invalid check digit', () => {
-      // Base: valid Berlin 11-digit '16012345677' (P=7), wrong P=8
-      const result = validateSteuernummer('16/012/345678');
+      // P=0 is invalid for all BUFAs with FF=16
+      const result = validateSteuernummer('16/012/345670');
 
       expect(result.valid).toBe(false);
       expect(result.reason).toBeDefined();
@@ -345,39 +345,34 @@ describe('validateSteuernummer', () => {
 
   it('check valid tax numbers', () => {
     const validTaxNumbers = [
-      // 13-digit ELSTER format with correct Prüfziffer
-      // Berlin - BUFA 1116 (Neukölln)
-      "1116012345677",
+      // 13-digit ELSTER format — check digits computed with correct per-state algorithms
+      // Berlin BUFA 1116 (Neukölln), ELF/BE-A, BBB=123 not in B-range → A
+      "1116012345673",
+      // Berlin BUFA 1121 (Tempelhof), ELF/BE-A, BBB=081 not in [201-693] → A (reference number)
+      "1121081508150",
+      // Brandenburg BUFA 3046 (Potsdam), standard Elfer
+      "3046012345673",
+      // Bavaria BUFA 9101 (Augsburg-Stadt), standard Elfer
+      "9101012345677",
+      // North Rhine-Westphalia BUFA 5101 (Dinslaken), NRW_11
+      "5101012345670",
+      // Baden-Württemberg BUFA 2801 (Offenburg), Zweier
+      "2801012345678",
+      // Hamburg BUFA 2210, ELF/HH
+      "2210012345670",
 
-      // Brandenburg - BUFA 3046 (Potsdam)
-      "3046012345674",
-
-      // Bavaria - BUFA 9101 (Augsburg-Stadt)
-      "9101012345671",
-
-      // North Rhine-Westphalia - BUFA 5101 (Dinslaken)
-      "5101012345675",
-
-      // Baden-Württemberg - BUFA 2801 (Offenburg)
-      "2801012345673",
-
-      // Hamburg - BUFA 2210
-      "2210012345677",
-
-      // 10-digit local format with slashes (exercises normalization + multi-BUFA search)
-      // Berlin local: FF=16, BBB=123, UUUU=4567, P=7
-      "16/123/45677",
-
-      // Hamburg local: FF=10, BBB=123, UUUU=4567, P=7
-      "10/123/45677",
+      // 10-digit local format (exercises normalization + multi-BUFA search)
+      // Berlin local: FF=16, BBB=123, UUUU=4567, P=3 (valid for BUFA 1116)
+      "16/123/45673",
+      // Hamburg local: FF=10, BBB=123, UUUU=4567, P=0 (valid for BUFA 2210)
+      "10/123/45670",
 
       // 11-digit local format FF0BBBUUUUP (ELSTER 13-digit without Landesnummer prefix)
-      // Berlin: FF=16, 0, BBB=123, UUUU=4567, P=7
-      "16012345677",
-      "16/0/123/45677",
-
-      // Hamburg: FF=10, 0, BBB=123, UUUU=4567, P=7
-      "10012345677",
+      // Berlin: FF=16, 0, BBB=123, UUUU=4567, P=3
+      "16012345673",
+      "16/0/123/45673",
+      // Hamburg: FF=10, 0, BBB=123, UUUU=4567, P=0
+      "10012345670",
     ];
 
     for (const taxNumber of validTaxNumbers) {
@@ -411,7 +406,6 @@ describe('validateSteuernummer', () => {
       "123/456/7890123",
 
       // Invalid characters
-      "12-345-67890",
       "12/345/6789A",
 
       // Empty / malformed
@@ -424,7 +418,7 @@ describe('validateSteuernummer', () => {
 
     for (const taxNumber of invalidTaxNumbers) {
       const result = validateSteuernummer(taxNumber);
-      expect(result.valid).toBe(false);
+expect(result.valid).toBe(false);
     }
   });
 });

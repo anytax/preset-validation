@@ -48,28 +48,28 @@ describe('Preset Validation Functions', () => {
       it('should reject tax numbers without valid BUFA codes', () => {
         // Strict validation: Numbers with unknown Finanzamt or invalid check digits are rejected
         expect(validateGermanTaxNumber('11/160/87412')).toBe(false); // Invalid check digit
-        expect(validateGermanTaxNumber('12345678901')).toBe(false); // Unknown Finanzamt "12"
+        expect(validateGermanTaxNumber('16012345670')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
         expect(validateGermanTaxNumber('111601234567')).toBe(false); // Invalid check digit
         // Note: Real valid tax numbers require correct BUFA codes AND valid check digits
       });
 
       it('should reject tax numbers with unknown Finanzamt', () => {
         expect(validateGermanTaxNumber('18/181/50815')).toBe(false); // Unknown Finanzamt "18"
-        expect(validateGermanTaxNumber('12 345 678 90')).toBe(false); // Unknown Finanzamt "12"
-        expect(validateGermanTaxNumber('123-456-789-01')).toBe(false); // Unknown Finanzamt "12"
+        expect(validateGermanTaxNumber('16 123 456 70')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
+        expect(validateGermanTaxNumber('160-123-456-70')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
       });
 
       it('should reject numbers without valid BUFA during conversion', () => {
-        // All rejected due to unknown Finanzamt or invalid check digits
-        expect(validateGermanTaxNumber('1234567890')).toBe(false); // Unknown Finanzamt "12"
-        expect(validateGermanTaxNumber('12345678901')).toBe(false); // Unknown Finanzamt "12"
+        // All rejected due to unknown BUFA or invalid check digits
+        expect(validateGermanTaxNumber('1612345670')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
+        expect(validateGermanTaxNumber('16012345670')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
         expect(validateGermanTaxNumber('123456789012')).toBe(false); // Unknown BUFA "1234"
       });
 
       it('should reject complex formatted numbers with invalid BUFA', () => {
         // All rejected due to invalid check digits or unknown BUFA
         expect(validateGermanTaxNumber('  11 / 160 / 874 - 12  ')).toBe(false);
-        expect(validateGermanTaxNumber('12-345-678-90')).toBe(false);
+        expect(validateGermanTaxNumber('16-123-456-70')).toBe(false); // P=0 invalid for all FF=16 BUFAs
         expect(validateGermanTaxNumber('11 16 08 74 12')).toBe(false);
       });
     });
@@ -216,7 +216,7 @@ describe('Preset Validation Functions', () => {
       it('should reject taxNumber preset with invalid BUFA', () => {
         // Strict validation: All rejected due to invalid BUFA or check digits
         expect(runValidationPreset('taxNumber', '11/160/87412')).toBe(false); // Invalid check digit
-        expect(runValidationPreset('taxNumber', '12345678901')).toBe(false); // Unknown Finanzamt
+        expect(runValidationPreset('taxNumber', '16012345670')).toBe(false); // Invalid check digit (P=0 invalid for all FF=16 BUFAs)
         expect(runValidationPreset('taxNumber', '123456789012')).toBe(false); // Unknown BUFA
       });
 
