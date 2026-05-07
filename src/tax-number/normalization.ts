@@ -80,24 +80,9 @@ export function normalizeTo13Digits(input: string, bufa: string): string | null 
   }
 
   if (digits.length === 11) {
-    // 11-digit format: Assume it needs LL prepended
-    // FFBBB UUUUP -> LLFFBBB UUUUP (but that's 12 digits)
-    // OR it could be LLFFBBB UUUUP already but missing one digit
-    // For now, try to convert by adding LL at the beginning and padding
-    const FF_in = digits.substring(0, 2);
-
-    if (!isNRW) {
-      // Try assuming it's FFBBBUUUUP (missing check digit)
-      const BBB = digits.substring(2, 5);
-      const UUUU = digits.substring(5, 9);
-      const P = digits.substring(9, 11);
-      return `${LL}${FF_in}0${BBB}${UUUU}${P}`;
-    } else {
-      // NRW format
-      const BBBB = digits.substring(2, 6);
-      const UUUP = digits.substring(6, 11);
-      return `${LL}${FF_in}0${BBBB}${UUUP}`;
-    }
+    // 11-digit format is FF0BBBUUUUP — the ELSTER 13-digit number without the
+    // leading Landesnummer (LL). Prepending LL produces the full 13-digit form.
+    return `${LL}${digits}`;
   }
 
   if (digits.length === 12) {
