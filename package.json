@@ -1,6 +1,6 @@
 {
   "name": "@anytax/preset-validation",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A comprehensive validation library for German tax identifiers and international banking codes",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

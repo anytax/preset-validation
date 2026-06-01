@@ -46,64 +46,36 @@ export function normalizeSteuernummer(input: string): string {
 }
 
 /**
- * Converts 10, 11, or 12-digit tax numbers to 13-digit ELSTER format
+ * Converts a 10/11/12-digit tax number to the 13-digit ELSTER format for a given BUFA.
  *
- * @param input - Normalized tax number (10, 11, or 12 digits)
- * @param bufa - 4-digit BUFA code (Landesnummer + Finanzamtsnummer)
+ * ELSTER format: `LLFF0BBBUUUUP` (non-NRW) or `LLFF0BBBBUUUP` (NRW).
+ *
+ * For every on-Bescheid 10/11-digit shape (`FF BBB UUUUP`, `FFF BBB UUUUP`,
+ * `0FF BBB UUUUP` for Hessen, `FFF BBBB UUUP` for NRW, and the legacy
+ * "ELSTER minus LL" `FF0BBBUUUUP`), the trailing 8 digits are always the
+ * `BBB+UUUUP` (non-NRW) or `BBBB+UUUP` (NRW) suffix — i.e., everything after
+ * the `0` separator in the 13-digit form. So the unified rule for those inputs
+ * is `bufa + '0' + last8`.
+ *
+ * @param input - Tax number digits (10, 11, 12, or 13 digits; separators stripped automatically)
+ * @param bufa  - 4-digit BUFA code (Landesnummer + Finanzamtsnummer)
  * @returns 13-digit ELSTER format, or null if conversion not possible
  */
 export function normalizeTo13Digits(input: string, bufa: string): string | null {
   const digits = input.replace(/\D+/g, '');
+  if (bufa.length !== 4) return null;
 
-  const LL = bufa.substring(0, 2);
-  // const FF = bufa.substring(2, 4); // Not currently used in conversion logic
+  if (digits.length === 13) return digits;
 
-  // NRW check (Nordrhein-Westfalen has different structure)
-  const isNRW = LL === '05';
-
-  if (digits.length === 10) {
-    // FF BBB UUUUP  (normal states)
-    const FF_in = digits.substring(0, 2);
-    const BBB = digits.substring(2, 5);
-    const UUUU = digits.substring(5, 9);
-    const P = digits.substring(9);
-
-    if (!isNRW) {
-      // Insert 0 after LLFF to make 13 digits: LLFF0BBBUUUUP
-      return `${LL}${FF_in}0${BBB}${UUUU}${P}`;
-    } else {
-      // NRW = FF BBBB UUUP (10-digit)
-      const BBBB = digits.substring(2, 6);
-      const UUUP = digits.substring(6, 10);
-      return `${LL}${FF_in}0${BBBB}${UUUP}`;
-    }
-  }
-
-  if (digits.length === 11) {
-    // 11-digit format is FF0BBBUUUUP — the ELSTER 13-digit number without the
-    // leading Landesnummer (LL). Prepending LL produces the full 13-digit form.
-    return `${LL}${digits}`;
-  }
-
+  // 12-digit: LLFF + (BBB+UUUUP | BBBB+UUUP) — insert '0' at position 4
   if (digits.length === 12) {
-    // LLFFBBB UUUU  (normal) - missing the leading 0 and check digit
-    const LL_in = digits.substring(0, 2);
-    const FF_in = digits.substring(2, 4);
-
-    if (!isNRW) {
-      const BBB = digits.substring(4, 7);
-      const UUUU = digits.substring(7, 11);
-      const P = digits.substring(11, 12);
-      return `${LL_in}${FF_in}0${BBB}${UUUU}${P}`;
-    } else {
-      const BBBB = digits.substring(4, 8);
-      const UUUP = digits.substring(8, 12);
-      return `${LL_in}${FF_in}0${BBBB}${UUUP}`;
-    }
+    return digits.substring(0, 4) + '0' + digits.substring(4);
   }
 
-  if (digits.length === 13) {
-    return digits; // already correct
+  // 10 or 11-digit Bescheid forms — drop the leading FF/FFF/0FF/FF0 prefix and
+  // prepend `BUFA + '0'`. Works uniformly for NRW and non-NRW.
+  if (digits.length === 10 || digits.length === 11) {
+    return bufa + '0' + digits.slice(-8);
   }
 
   return null;

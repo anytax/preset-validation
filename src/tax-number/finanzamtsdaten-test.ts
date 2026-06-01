@@ -259,7 +259,7 @@ export const TEST_BUFA_MAP: Record<string, FinanzamtInfo> = {
     landesnummer: '54',
     finanzamtsnummer: '00',
     isTest: true,
-    verfahren: 'ELF',
+    verfahren: 'NRW_11',
   },
   '5500': {
     bufa: '5500',
@@ -268,7 +268,7 @@ export const TEST_BUFA_MAP: Record<string, FinanzamtInfo> = {
     landesnummer: '55',
     finanzamtsnummer: '00',
     isTest: true,
-    verfahren: 'ELF',
+    verfahren: 'NRW_11',
   },
   '5600': {
     bufa: '5600',
@@ -277,7 +277,7 @@ export const TEST_BUFA_MAP: Record<string, FinanzamtInfo> = {
     landesnummer: '56',
     finanzamtsnummer: '00',
     isTest: true,
-    verfahren: 'ELF',
+    verfahren: 'NRW_11',
   },
   '2799': {
     bufa: '2799',
