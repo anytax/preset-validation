@@ -18,6 +18,46 @@ function findPossibleBufas(finanzamtNumber: string): string[] {
 }
 
 /**
+ * Finds candidate BUFAs for an 11-digit on-Bescheid tax number.
+ *
+ * 11-digit inputs come in several shapes depending on the state:
+ *   - `FFF BBB UUUUP` — Bayern, Brandenburg, MV, Saarland, Sachsen, Sachsen-Anhalt,
+ *     Thüringen: first 3 digits are the last 3 digits of the BUFA.
+ *   - `FFF BBBB UUUP` — NRW (Landesnummer 51-56): same prefix rule.
+ *   - `0FF BBB UUUUP` — Hessen: leading `0` followed by the BUFA's `FF`.
+ *   - `FF0 BBB UUUUP` — legacy "ELSTER 13-digit minus LL" form.
+ *
+ * For each candidate the caller still validates via Prüfziffer; this finder
+ * only narrows the candidate set by structural prefix.
+ */
+function findPossibleBufasFor11Digit(digits: string): string[] {
+  const prefix3 = digits.substring(0, 3);
+  const candidates: string[] = [];
+
+  for (const bufa of Object.keys(BUFA_MAP)) {
+    const bufaLast3 = bufa.substring(1, 4);
+    const bufaFF = bufa.substring(2, 4);
+
+    // FFF / NRW: last 3 digits of BUFA at the start of the input
+    if (bufaLast3 === prefix3) {
+      candidates.push(bufa);
+      continue;
+    }
+    // Hessen: "0" + FF
+    if (prefix3.startsWith('0') && '0' + bufaFF === prefix3) {
+      candidates.push(bufa);
+      continue;
+    }
+    // Legacy "ELSTER minus LL": FF + "0"
+    if (digits[2] === '0' && bufaFF === digits.substring(0, 2)) {
+      candidates.push(bufa);
+    }
+  }
+
+  return candidates;
+}
+
+/**
  * Validates 10-digit old format tax numbers by converting to 13-digit ELSTER format
  * Format: FFBBB UUUUP (Finanzamt 2 digits + Bezirk 3 digits + Unterscheidung 4 digits + Prüfziffer 1 digit)
  */
@@ -90,14 +130,12 @@ function validate11DigitFormat(normalized: string): {
     return { valid: false, reason: 'Tax number cannot be all zeros' };
   }
 
-  // Extract Finanzamt number (first 2 digits)
-  const finanzamtNumber = normalized.substring(0, 2);
-
-  // Find all possible BUFAs with this Finanzamt number
-  const possibleBufas = findPossibleBufas(finanzamtNumber);
+  // Candidate BUFAs are determined by the structural shape of the 11-digit input,
+  // not by the first 2 digits (which are NOT the Finanzamtsnummer in most 11-digit
+  // forms — they're part of FFF/0FF/FF0).
+  const possibleBufas = findPossibleBufasFor11Digit(normalized);
 
   if (possibleBufas.length === 0) {
-    // No matching Finanzamt found - reject it
     return {
       valid: false,
       reason: 'Unknown Finanzamt number - no matching BUFA found',
