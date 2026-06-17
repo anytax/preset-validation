@@ -37,6 +37,30 @@ describe('normalizeTo13Digits', () => {
     expect(normalizeTo13Digits('66815/08156', '28')).toBeNull();
   });
 
+  it('strips separators from the BUFA argument', () => {
+    expect(normalizeTo13Digits('66815/08156', '28/66')).toBe('2866081508156');
+  });
+
+  it('returns null for empty input', () => {
+    expect(normalizeTo13Digits('', '2866')).toBeNull();
+  });
+
+  describe('BUFA is optional for 12- and 13-digit inputs', () => {
+    it('returns 13-digit input unchanged without BUFA', () => {
+      expect(normalizeTo13Digits('2866081508156')).toBe('2866081508156');
+      expect(normalizeTo13Digits('2866081508156', null)).toBe('2866081508156');
+    });
+
+    it('inserts 0 at position 4 for 12-digit input without BUFA', () => {
+      expect(normalizeTo13Digits('286681508156')).toBe('2866081508156');
+    });
+
+    it('returns null for 10/11-digit input without BUFA', () => {
+      expect(normalizeTo13Digits('6681508156')).toBeNull();
+      expect(normalizeTo13Digits('19881508152')).toBeNull();
+    });
+  });
+
   describe('on-Bescheid 10-digit (FF BBB UUUUP)', () => {
     const cases: Array<[string, string, string, string]> = [
       ['Baden-Württemberg', '66815/08156', '2866', '2866081508156'],

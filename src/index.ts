@@ -15,3 +15,5 @@ export {
   validateIBAN,
   type ValidationPresetType,
 } from './preset-validation.helper';
+
+export { normalizeTo13Digits } from './tax-number/normalization';
